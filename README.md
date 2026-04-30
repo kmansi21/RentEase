@@ -46,14 +46,14 @@ RentEase is a full-stack web application designed to help property owners effici
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home]<img width="1920" height="1080" alt="Screenshot (199)" src="https://github.com/user-attachments/assets/17d70f11-de04-4cff-87ef-66f314922bc5" />
+<img width="1920" height="1080" alt="Screenshot (199)" src="https://github.com/user-attachments/assets/17d70f11-de04-4cff-87ef-66f314922bc5" />
 
 ### 📊 Dashboard
-![Dashboard].<img width="1920" height="1080" alt="Screenshot (187)" src="https://github.com/user-attachments/assets/70e1a1c5-aa0f-4831-a981-6630a4c9f089" />
+<img width="1920" height="1080" alt="Screenshot (187)" src="https://github.com/user-attachments/assets/70e1a1c5-aa0f-4831-a981-6630a4c9f089" />
 
 ### 🏢 Properties
-![Properties]<img width="1920" height="1080" alt="Screenshot (188)" src="https://github.com/user-attachments/assets/6f766023-e183-475f-a04d-281605dd67c9" />
+<img width="1920" height="1080" alt="Screenshot (188)" src="https://github.com/user-attachments/assets/6f766023-e183-475f-a04d-281605dd67c9" />
 
 
 ### 💰 Payments
-![Payments].<img width="1920" height="1080" alt="Screenshot (189)" src="https://github.com/user-attachments/assets/cbc971d9-f4c0-4583-b609-dfcfbe27ed38" />
+<img width="1920" height="1080" alt="Screenshot (189)" src="https://github.com/user-attachments/assets/cbc971d9-f4c0-4583-b609-dfcfbe27ed38" />
