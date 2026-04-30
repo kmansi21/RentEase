@@ -42,6 +42,7 @@ RentEase is a full-stack web application designed to help property owners effici
 - Insights generation from rental data  
 - Trend analysis (monthly payments, occupancy trends)  
 ---
+## 🚀 Live Demo: https://rentease-t8jr.onrender.com/
 
 ## 📸 Screenshots
 
