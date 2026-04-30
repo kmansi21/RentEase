@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RentEase Dashboard</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap 5 -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --light-bg: #f8fafc;
+        --dark: #0f172a;
+        --muted: #64748b;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--light-bg);
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: #ffffff;
+        min-height: 100vh;
+        border-right: 1px solid #e5e7eb;
+        padding: 20px;
+      }
+
+      .sidebar .nav-link {
+        color: var(--dark);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      h3 {
+        font-size: clamp(18px, 2.5vw, 28px);
+      }
+
+      h5 {
+        font-size: clamp(14px, 2vw, 18px);
+      }
+      .card-custom {
+        transition: all 0.3s ease;
+      }
+
+      .card-custom:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar .nav-link.active,
+      .sidebar .nav-link:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+      #insightsList li {
+        font-size: 14px;
+      }
+      .brand {
+        font-weight: 700;
+        font-size: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .brand i {
+        background: var(--primary);
+        color: #fff;
+        padding: 8px;
+        border-radius: 8px;
+      }
+
+      /* Cards */
+      .card-custom {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-custom h5 {
+        font-size: 14px;
+        color: var(--muted);
+      }
+
+      .card-custom h3 {
+        font-weight: 600;
+      }
+
+      /* Topbar */
+      .topbar {
+        background: #fff;
+        padding: 15px 25px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      /* Mobile Fix */
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: -260px;
+          width: 250px;
+          height: 100%;
+          z-index: 1050;
+          transition: 0.3s;
+        }
+
+        .sidebar.show {
+          left: 0;
+        }
+
+        .overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.4);
+          z-index: 1040;
+          display: none;
+        }
+
+        .overlay.show {
+          display: block;
+        }
+        #insightsList li {
+          font-size: 13px;
+          padding: 8px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Mobile Topbar -->
+    <nav class="navbar navbar-light bg-white shadow-sm d-md-none">
+      <div class="container-fluid">
+        <button class="btn btn-outline-primary" onclick="toggleSidebar()">
+          <span class="bi bi-buildings fw-bold"> RentEase</span>
+          <i class="bi bi-list"></i>
+        </button>
+
+        <i class="bi bi-person-circle"> {{name}}</i>
+      </div>
+    </nav>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+
+        <div class="col-md-3 col-lg-2 sidebar" id="sidebar">
+          <!-- Close Button (Mobile Only) -->
+          <div class="d-md-none text-end mb-3">
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              onclick="toggleSidebar()"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="brand"><i class="bi bi-buildings"></i> RentEase</div>
+
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'property' %}">
+                <i class="bi bi-house-door me-2"></i>Properties
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'tenant' %}">
+                <i class="bi bi-people me-2"></i>Tenants
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'payment' %}">
+                <i class="bi bi-cash-stack me-2"></i>Payments
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'agreement' %}">
+                <i class="bi bi-file-earmark-text me-2"></i>Agreements
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link text-danger" href="{% url 'logout' %}">
+                <i class="bi bi-box-arrow-right me-2"></i>Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto">
+          <!-- Desktop Topbar -->
+          <div
+            class="topbar d-none d-md-flex justify-content-between align-items-center"
+          >
+            <h5 class="mb-0">Dashboard Overview</h5>
+            <div>
+              <i class="bi bi-person-circle"> {{name}}</i>
+            </div>
+
+            <div class="row mt-4">
+              <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card card-custom p-4 text-center">
+                  <h6>Average Payment</h6>
+                  <h3 id="avgPayment">0</h3>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card card-custom p-4 text-center">
+                  <h6>Highest Payment</h6>
+                  <h3 id="maxPayment">0</h3>
+                </div>
+              </div>
+
+              <div class="col-12 col-sm-6 col-lg-4">
+                <div class="card card-custom p-4 text-center">
+                  <h6>Lowest Payment</h6>
+                  <h3 id="minPayment">0</h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- ✅ Insights OUTSIDE row OR inside full-width column -->
+            <div class="card card-custom p-4 mt-4">
+              <h5 class="fw-semibold mb-3">💡 Insights</h5>
+              <ul
+                id="insightsList"
+                style="list-style: none; padding-left: 0"
+              ></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("show");
+        document.getElementById("overlay").classList.toggle("show");
+        document.body.classList.toggle("overflow-hidden");
+      }
+
+      async function loadDashboard() {
+        const loader = document.getElementById("chartLoader");
+        const container = document.getElementById("chartContainer");
+
+        try {
+          const email = "{{ request.session.email }}";
+
+          const res = await fetch(`/api/dashboard/?email=${email}`);
+          const data = await res.json();
+
+          console.log("DATA:", data);
+
+          // ❗ No data case
+          if (!data.months || data.months.length === 0) {
+            loader.innerHTML = "<p class='text-muted'>No data available</p>";
+            return;
+          }
+
+          // ===== CHART =====
+          const canvas = document.getElementById("revenueChart");
+
+          if (!canvas) {
+            console.error("Canvas not found");
+            loader.innerHTML = "<p class='text-danger'>Chart not available</p>";
+            return;
+          }
+
+          const ctx = canvas.getContext("2d");
+
+          // Gradient
+          const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+          gradient.addColorStop(0, "rgba(37, 99, 235, 0.4)");
+          gradient.addColorStop(1, "rgba(37, 99, 235, 0)");
+
+          new Chart(ctx, {
+            type: data.months.length > 1 ? "line" : "bar",
+            data: {
+              labels: data.months,
+              datasets: [
+                {
+                  label: "Monthly Revenue",
+                  data: data.revenue_data,
+                  borderWidth: 3,
+                  tension: 0.4,
+                  borderColor: "#2563eb",
+                  fill: true,
+                  backgroundColor: gradient,
+
+                  pointRadius: 6,
+                  pointBackgroundColor: "#2563eb",
+                  pointBorderColor: "#ffffff",
+                  pointBorderWidth: 2,
+
+                  segment: {
+                    borderColor: (ctx) => {
+                      if (!ctx.p0 || !ctx.p1) return "#2563eb";
+
+                      const prev = ctx.p0.parsed.y;
+                      const curr = ctx.p1.parsed.y;
+
+                      return curr >= prev ? "#16a34a" : "#dc2626";
+                    },
+                  },
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            },
+          });
+
+          // ===== CARDS =====
+          document.getElementById("avgPayment").innerText =
+            "₹ " + data.average_payment;
+          document.getElementById("maxPayment").innerText =
+            "₹ " + data.highest_payment;
+          document.getElementById("minPayment").innerText =
+            "₹ " + data.lowest_payment;
+
+          // ===== INSIGHTS =====
+          const insightsList = document.getElementById("insightsList");
+
+          if (data.insights && data.insights.length > 0) {
+            insightsList.innerHTML = "";
+
+            data.insights.forEach((item) => {
+              const li = document.createElement("li");
+
+              li.style.padding = "10px";
+              li.style.marginBottom = "8px";
+              li.style.background = "#f1f5f9";
+              li.style.borderRadius = "8px";
+
+              li.innerText = item;
+
+              insightsList.appendChild(li);
+            });
+          } else {
+            insightsList.innerHTML = "<li>No insights available</li>";
+          }
+
+          // ✅ SUCCESS → Hide loader, show chart
+          loader.style.display = "none";
+          container.style.display = "block";
+        } catch (error) {
+          console.error("ERROR:", error);
+
+          // ❌ ERROR → Show message instead of loader
+          loader.innerHTML =
+            "<p class='text-danger'>Failed to load analytics</p>";
+        }
+      }
+
+      // Run on page load
+      window.onload = loadDashboard;
+    </script>
+  </body>
+</html>

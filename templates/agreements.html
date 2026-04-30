@@ -1,0 +1,590 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RentEase – Agreements</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --primary: #2563eb;
+        --light-bg: #f8fafc;
+        --dark: #0f172a;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--light-bg);
+      }
+
+      /* Sidebar */
+      .sidebar {
+        background: #fff;
+        min-height: 100vh;
+        border-right: 1px solid #e5e7eb;
+        padding: 20px;
+      }
+      .sidebar .nav-link {
+        color: var(--dark);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        font-weight: 500;
+      }
+      .sidebar .nav-link.active,
+      .sidebar .nav-link:hover {
+        background: var(--primary);
+        color: #fff;
+      }
+      .brand {
+        font-weight: 700;
+        font-size: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand i {
+        background: var(--primary);
+        color: #fff;
+        padding: 8px;
+        border-radius: 8px;
+      }
+
+      .card-custom {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      }
+      .status-active {
+        background: #dcfce7;
+        color: #15803d;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+      .status-expired {
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+      .topbar {
+        background: #fff;
+        padding: 15px 25px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      /* Mobile Sidebar */
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          top: 0;
+          left: -260px;
+          width: 250px;
+          height: 100%;
+          z-index: 1050;
+          transition: 0.3s;
+        }
+        .sidebar.show {
+          left: 0;
+        }
+
+        .overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.4);
+          z-index: 1040;
+          display: none;
+        }
+        .overlay.show {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Mobile Topbar -->
+    <nav class="navbar navbar-light bg-white shadow-sm d-md-none">
+      <div class="container-fluid">
+        <button class="btn btn-outline-primary" onclick="toggleSidebar()">
+          <span class="bi bi-buildings fw-bold"> RentEase</span>
+          <i class="bi bi-list"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 sidebar" id="sidebar">
+          <div class="d-md-none text-end mb-3">
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              onclick="toggleSidebar()"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="brand"><i class="bi bi-buildings"></i> RentEase</div>
+
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'dashboard' %}"
+                ><i class="bi bi-speedometer2 me-2"></i>Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'property' %}"
+                ><i class="bi bi-house-door me-2"></i>Properties</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'tenant' %}"
+                ><i class="bi bi-people me-2"></i>Tenants</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'payment' %}"
+                ><i class="bi bi-cash-stack me-2"></i>Payments</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'agreement' %}"
+                ><i class="bi bi-file-earmark-text me-2"></i>Agreements</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-danger" href="{% url 'logout' %}"
+                ><i class="bi bi-box-arrow-right me-2"></i>Logout</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto">
+          <!-- Desktop Topbar -->
+          <div
+            class="topbar d-none d-md-flex justify-content-between align-items-center"
+          >
+            <h5 class="mb-0">Agreements</h5>
+            <button
+              class="btn btn-primary btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#agreementModal"
+            >
+              <i class="bi bi-plus-lg me-1"></i> Create Agreement
+            </button>
+          </div>
+
+          <!-- Mobile Topbar -->
+          <div
+            class="d-md-none p-3 bg-white border-bottom d-flex justify-content-between align-items-center"
+          >
+            <h6 class="mb-0">Agreements</h6>
+            <button
+              class="btn btn-primary btn-sm"
+              data-bs-toggle="modal"
+              data-bs-target="#agreementModal"
+            >
+              <i class="bi bi-plus-lg"></i> Add Agreement
+            </button>
+          </div>
+
+          {% if messages %} {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show">
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+            ></button>
+          </div>
+          {% endfor %} {% endif %}
+
+          <div class="p-3 p-md-4">
+            <div class="card card-custom p-3 p-md-4">
+              <h6 class="fw-semibold mb-3">Agreement List</h6>
+
+              <!-- DESKTOP TABLE -->
+              <div class="table-responsive d-none d-md-block">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>Tenant</th>
+                      <th>Property</th>
+                      <th>Rent</th>
+                      <th>Deposit</th>
+                      <th>Start</th>
+                      <th>End</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for a in agreements %}
+                    <tr>
+                      <td>{{ a.tenant_name }}</td>
+                      <td>{{ a.property_name }}</td>
+                      <td>₹ {{ a.monthly_rent }}</td>
+                      <td>₹ {{ a.security_deposit }}</td>
+                      <td>{{ a.start_date }}</td>
+                      <td>{{ a.end_date }}</td>
+                      <td>
+                        {% if a.status == "Valid" %}
+                        <span class="status-active">Valid</span>
+                        {% else %}
+                        <span class="status-expired">Expired</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <button
+                          class="btn btn-sm btn-outline-primary"
+                          onclick="openViewModal('{{ a.id }}','{{ a.tenant_id }}','{{ a.property_id }}','{{ a.monthly_rent }}','{{ a.security_deposit }}','{{ a.start_date|date:'Y-m-d' }}','{{ a.end_date|date:'Y-m-d' }}','{{ a.status }}')"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- MOBILE CARDS -->
+              <div class="d-md-none">
+                {% for a in agreements %}
+                <div class="card mb-3 border-0 shadow-sm">
+                  <div class="card-body">
+                    <h6 class="fw-semibold">{{ a.tenant_name }}</h6>
+                    <p class="mb-1 text-muted small">{{ a.property_name }}</p>
+
+                    <p class="mb-1">Rent: ₹ {{ a.monthly_rent }}</p>
+                    <p class="mb-1">Deposit: ₹ {{ a.security_deposit }}</p>
+                    <p class="mb-1 small text-muted">
+                      {{ a.start_date }} → {{ a.end_date }}
+                    </p>
+
+                    <div
+                      class="d-flex justify-content-between align-items-center mt-2"
+                    >
+                      {% if a.status == "Valid" %}
+                      <span class="status-active">Valid</span>
+                      {% else %}
+                      <span class="status-expired">Expired</span>
+                      {% endif %}
+
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        onclick="openViewModal('{{ a.id }}','{{ a.tenant_id }}','{{ a.property_id }}','{{ a.monthly_rent }}','{{ a.security_deposit }}','{{ a.start_date|date:'Y-m-d' }}','{{ a.end_date|date:'Y-m-d' }}','{{ a.status }}')"
+                      >
+                        View
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= CREATE MODAL ================= -->
+    <div class="modal fade" id="agreementModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <form method="POST" action="{% url 'add_agreement' %}">
+            {% csrf_token %}
+
+            <div class="modal-header py-2">
+              <h6 class="modal-title fw-semibold">Create Agreement</h6>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div class="modal-body py-2">
+              <div class="row g-2">
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Tenant</label>
+                  <select
+                    name="tenant_id"
+                    id="create_tenant"
+                    class="form-select form-select-sm"
+                    required
+                  >
+                    <option value="">Select Tenant</option>
+                    {% for t in tenants %}
+                    <option
+                      value="{{ t.id }}"
+                      data-property="{{ t.property_id }}"
+                      data-property-name="{{ t.property_name }}"
+                    >
+                      {{ t.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Property</label>
+                  <input
+                    type="text"
+                    id="property_display"
+                    class="form-control form-control-sm bg-light"
+                    readonly
+                  />
+                  <input
+                    type="hidden"
+                    name="property_id"
+                    id="create_property"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Monthly Rent</label>
+                  <input
+                    type="number"
+                    name="monthly_rent"
+                    class="form-control form-control-sm"
+                    required
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Security Deposit</label>
+                  <input
+                    type="number"
+                    name="security_deposit"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Start Date</label>
+                  <input
+                    type="date"
+                    name="start_date"
+                    class="form-control form-control-sm"
+                    required
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">End Date</label>
+                  <input
+                    type="date"
+                    name="end_date"
+                    class="form-control form-control-sm"
+                    required
+                  />
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label mb-1 small">Rent Due Day</label>
+                  <input
+                    type="number"
+                    name="rent_due_day"
+                    class="form-control form-control-sm"
+                    min="1"
+                    max="31"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer py-2">
+              <button type="submit" class="btn btn-primary btn-sm w-100">
+                Save Agreement
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- ================= VIEW / UPDATE MODAL ================= -->
+    <div class="modal fade" id="viewAgreementModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
+        <div class="modal-content">
+          <form method="POST" action="{% url 'update_agreement' %}">
+            {% csrf_token %}
+            <input type="hidden" name="agreement_id" id="edit_agreement_id" />
+
+            <div class="modal-header py-2">
+              <h6 class="modal-title fw-semibold">Update Agreement</h6>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            <div class="modal-body py-2">
+              <div class="row g-2">
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Tenant</label>
+                  <select
+                    name="tenant_id"
+                    id="edit_tenant"
+                    class="form-select form-select-sm"
+                    required
+                  >
+                    {% for t in tenants %}
+                    <option value="{{ t.id }}">{{ t.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Property</label>
+                  <select
+                    name="property_id"
+                    id="edit_property"
+                    class="form-select form-select-sm"
+                    required
+                  >
+                    {% for p in properties %}
+                    <option value="{{ p.id }}">{{ p.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Monthly Rent</label>
+                  <input
+                    type="number"
+                    name="monthly_rent"
+                    id="edit_rent"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Security Deposit</label>
+                  <input
+                    type="number"
+                    name="security_deposit"
+                    id="edit_deposit"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">Start Date</label>
+                  <input
+                    type="date"
+                    name="start_date"
+                    id="edit_start"
+                    class="form-control form-control-sm"
+                    readonly
+                  />
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label mb-1 small">End Date</label>
+                  <input
+                    type="date"
+                    name="end_date"
+                    id="edit_end"
+                    class="form-control form-control-sm"
+                  />
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label mb-1 small">Status</label>
+                  <select
+                    name="status"
+                    id="edit_status"
+                    class="form-select form-select-sm"
+                  >
+                    <option value="Valid">Valid</option>
+                    <option value="Expired">Expired</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer py-2">
+              <button type="submit" class="btn btn-primary btn-sm w-100">
+                Update Agreement
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleSidebar() {
+        document.getElementById("sidebar").classList.toggle("show");
+        document.getElementById("overlay").classList.toggle("show");
+      }
+
+      function openViewModal(
+        id,
+        tenant,
+        property,
+        rent,
+        deposit,
+        start,
+        end,
+        status,
+      ) {
+        document.getElementById("edit_agreement_id").value = id;
+        document.getElementById("edit_tenant").value = tenant;
+        document.getElementById("edit_property").value = property;
+        document.getElementById("edit_rent").value = rent;
+        document.getElementById("edit_deposit").value = deposit;
+        document.getElementById("edit_start").value = start;
+        document.getElementById("edit_end").value = end;
+        document.getElementById("edit_status").value = status;
+
+        var myModal = new bootstrap.Modal(
+          document.getElementById("viewAgreementModal"),
+        );
+        myModal.show();
+      }
+      document
+        .getElementById("create_tenant")
+        .addEventListener("change", function () {
+          const selectedOption = this.options[this.selectedIndex];
+
+          const propertyId = selectedOption.getAttribute("data-property");
+          const propertyName =
+            selectedOption.getAttribute("data-property-name");
+
+          document.getElementById("create_property").value = propertyId || "";
+          document.getElementById("property_display").value =
+            propertyName || "";
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

@@ -1,0 +1,616 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentEase – Payments</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#2563eb;
+  --light-bg:#f8fafc;
+  --dark:#0f172a;
+}
+
+body{
+  font-family:'Inter', sans-serif;
+  background:var(--light-bg);
+}
+
+/* Sidebar */
+.sidebar{
+  background:#fff;
+  min-height:100vh;
+  border-right:1px solid #e5e7eb;
+  padding:20px;
+}
+
+.sidebar .nav-link{
+  color:var(--dark);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:8px;
+  font-weight:500;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover{
+  background:var(--primary);
+  color:#fff;
+}
+
+.brand{
+  font-weight:700;
+  font-size:20px;
+  margin-bottom:30px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.brand i{
+  background:var(--primary);
+  color:#fff;
+  padding:8px;
+  border-radius:8px;
+}
+.modal-body {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 15px;
+}
+.card-custom{
+  border:none;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.05);
+}
+
+.topbar{
+  background:#fff;
+  padding:15px 25px;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.status-paid{
+  background:#dcfce7;
+  color:#15803d;
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:12px;
+}
+
+.status-overdue{
+  background:#fee2e2;
+  color:#b91c1c;
+  padding:5px 10px;
+  border-radius:20px;
+  font-size:12px;
+}
+
+/* Mobile Sidebar */
+@media(max-width:768px){
+    #historyTable thead{
+    display:none;
+  }
+
+  #historyTable tbody tr{
+    display:block;
+    background:#fff;
+    margin-bottom:12px;
+    padding:12px;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  }
+
+  #historyTable tbody td{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    font-size:14px;
+    border:none;
+  }
+
+  #historyTable tbody td::before{
+    content: attr(data-label);
+    font-weight:600;
+    color:#64748b;
+  }
+  .sidebar{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:250px;
+    height:100%;
+    z-index:1050;
+    transition:0.3s;
+  }
+  .sidebar.show{ left:0; }
+
+  .overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.4);
+    z-index:1040;
+    display:none;
+  }
+  .overlay.show{ display:block; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Mobile Topbar -->
+<nav class="navbar navbar-light bg-white shadow-sm d-md-none">
+  <div class="container-fluid">
+    <button class="btn btn-outline-primary" onclick="toggleSidebar()">
+      <span class="bi bi-buildings fw-bold"> RentEase</span>
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+</nav>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="container-fluid">
+<div class="row">
+
+<!-- Sidebar -->
+<div class="col-md-3 col-lg-2 sidebar" id="sidebar">
+
+<div class="d-md-none text-end mb-3">
+<button class="btn btn-sm btn-outline-secondary" onclick="toggleSidebar()">
+<i class="bi bi-x-lg"></i>
+</button>
+</div>
+
+<div class="brand"><i class="bi bi-buildings"></i> RentEase</div>
+
+
+          <ul class="nav flex-column">
+<li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+<li class="nav-item"><a class="nav-link "  href="{% url 'property' %}"><i class="bi bi-house-door me-2"></i>Properties</a></li>
+<li class="nav-item"><a class="nav-link" href="{% url 'tenant' %}"><i class="bi bi-people me-2"></i>Tenants</a></li>
+<li class="nav-item"><a class="nav-link active" href="{% url 'payment' %}"><i class="bi bi-cash-stack me-2"></i>Payments</a></li>
+<li class="nav-item"><a class="nav-link" href="{% url 'agreement' %}"><i class="bi bi-file-earmark-text me-2"></i>Agreements</a></li>
+<li class="nav-item"><a class="nav-link text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+</ul>
+</div>
+
+<!-- Main Content -->
+<div class="col-md-9 col-lg-10 ms-sm-auto">
+
+<!-- Desktop Topbar -->
+<div class="topbar d-none d-md-flex justify-content-between align-items-center">
+<h5 class="mb-0">Payments</h5>
+
+</div>
+
+<!-- Mobile Topbar Section -->
+<div class="d-md-none p-3 bg-white border-bottom d-flex justify-content-between align-items-center">
+<h6 class="mb-0">Payments</h6>
+
+</div>
+
+<div class="p-3 p-md-4">
+
+<!-- Filter -->
+<div class="row mb-3">
+  <div class="col-md-4 mb-2 mb-md-0">
+    <input 
+      type="text" 
+      id="searchInput" 
+      class="form-control" 
+      placeholder="Search tenant or property..."
+      onkeyup="searchTable()"
+    >
+  </div>
+
+
+</div>
+
+<div class="card card-custom p-3 p-md-4">
+<h6 class="fw-semibold mb-3">Payment Records</h6>
+{% if messages %}
+{% for message in messages %}
+<div class="alert alert-success alert-dismissible fade show">
+{{ message }}
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endfor %}
+{% endif %}
+<!-- DESKTOP TABLE -->
+<div class="table-responsive d-none d-md-block">
+<table class="table align-middle" id="paymentsTable">
+<thead>
+<tr>
+<th>Tenant</th>
+<th>Property</th>
+<th>Month</th>
+<th>Amount</th>
+<th>Date</th>
+<th>Mode</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+{% for payment in payments %}
+<tr class="{% if payment.status != 'Paid' %}table-danger{% endif %}">
+<td>{{ payment.tenant_name }}</td>
+<td>{{ payment.property_name }}</td>
+<td>{{ payment.month }}</td>
+<td>₹ {{ payment.amount }}</td>
+<td>{{ payment.payment_date|default:"-" }}</td>
+<td>{{ payment.mode|default:"-" }}</td>
+<td>
+{% if payment.status == "Paid" %}
+  <span class="status-paid">Paid</span>
+{% else %}
+ <span class="status-overdue">Pending</span>
+{% endif %}
+</td>
+<td>
+  {% if payment.status != "Paid" %}
+    <button class="btn btn-sm btn-success me-1"
+            data-bs-toggle="modal"
+            data-bs-target="#paymentModal"
+            onclick="quickPay('{{ payment.tenant_id }}', '{{ payment.tenant_name }}', '{{ payment.property_name }}', '{{ payment.month }}', '{{ payment.amount }}')">
+      Pay Now
+    </button>
+  {% endif %}
+
+  <button class="btn btn-sm btn-outline-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#historyModal"
+          onclick="loadHistory('{{ payment.tenant_id }}', '{{ payment.tenant_name }}')">
+    History
+  </button>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+
+  <button class="btn btn-outline-primary btn-sm" onclick="prevPage()">⬅ Prev</button>
+
+  <span id="pageInfo" class="mx-2 small text-muted">Page 1</span>
+
+  <button class="btn btn-outline-primary btn-sm" onclick="nextPage()">Next ➡</button>
+
+</div>
+<!-- MOBILE CARDS -->
+<div class="d-md-none">
+{% for payment in payments %}
+<div class="card mb-3 border-0 shadow-sm">
+<div class="card-body">
+<h6 class="fw-semibold">{{ payment.tenant_name }}</h6>
+<p class="mb-1 text-muted small">{{ payment.property_name }} • {{ payment.month }}</p>
+<p class="fw-semibold mb-1">₹ {{ payment.amount }}</p>
+<p class="small mb-2">{{ payment.payment_date|default:"No Payment Yet" }} • {{ payment.mode|default:"-" }}</p>
+<div class="mt-2">
+
+  {% if payment.status == "Paid" %}
+    <span class="status-paid">Paid</span>
+  {% else %}
+    <span class="status-overdue">Pending</span>
+  {% endif %}
+
+  <div class="mt-2">
+    {% if payment.status != "Paid" %}
+      <button class="btn btn-sm btn-success me-1"
+              data-bs-toggle="modal"
+              data-bs-target="#paymentModal"
+              onclick="quickPay('{{ payment.tenant_id }}', '{{ payment.tenant_name }}', '{{ payment.property_name }}', '{{ payment.month }}', '{{ payment.amount }}')">
+        Pay Now
+      </button>
+    {% endif %}
+
+    <button class="btn btn-sm btn-outline-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#historyModal"
+            onclick="loadHistory('{{ payment.tenant_id }}', '{{ payment.tenant_name }}')">
+      History
+    </button>
+  </div>
+
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+
+<div class="modal fade" id="historyModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-md-down">
+    <div class="modal-content">
+
+      <!-- HEADER -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="historyTenantName">Tenant Payment History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- BODY (IMPORTANT) -->
+      <div class="modal-body">
+
+        <div class="table-responsive">
+          <table class="table table-striped" id="historyTable">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Property</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Mode</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Add Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+<div class="modal-content">
+
+ <form method="POST" action="{% url 'add_payment' %}" onsubmit="disableBtn()">
+    {% csrf_token %}
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <h5 class="modal-title">Add Payment</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <!-- Tenant -->
+      <div class="mb-3">
+        <label class="form-label">Tenant</label>
+        <input type="hidden" name="tenant_id" id="tenantIdField">
+        <input type="text" class="form-control" id="tenantNameField" readonly>
+      </div>
+
+      <!-- Property -->
+      <div class="mb-3">
+        <label class="form-label">Property</label>
+        <input type="text" class="form-control" id="propertyField" name="property_name" readonly>
+      </div>
+
+      <!-- Month -->
+      <div class="mb-3">
+        <label class="form-label">Rent Month</label>
+        <input type="month" class="form-control" name="month" required>
+      </div>
+
+      <!-- Amount -->
+      <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <input type="number" class="form-control" name="amount" required>
+      </div>
+
+      <!-- Date -->
+      <div class="mb-3">
+        <label class="form-label">Payment Date</label>
+        <input type="date" class="form-control" name="payment_date" required>
+      </div>
+
+      <!-- Mode -->
+      <div class="mb-3">
+        <label class="form-label">Payment Mode</label>
+        <select class="form-select" name="mode" required>
+          <option>Cash</option>
+          <option>UPI</option>
+          <option>Bank Transfer</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="modal-footer">
+      <button type="submit" id="saveBtn" class="btn btn-primary w-100">
+        Save Payment
+      </button>
+    </div>
+
+  </form>
+
+</div>
+</div>
+</div>
+
+
+<script>
+function toggleSidebar(){
+  document.getElementById("sidebar").classList.toggle("show");
+  document.getElementById("overlay").classList.toggle("show");
+}
+
+function quickPay(tenantId, tenantName, propertyName, month, amount) {
+
+  // Set tenant ID (hidden)
+  document.getElementById("tenantIdField").value = tenantId;
+
+  // Set tenant name (visible)
+  document.getElementById("tenantNameField").value = tenantName;
+
+  // Set property
+  document.getElementById("propertyField").value = propertyName;
+
+  // Auto-fill month
+  if (month) {
+    document.querySelector("input[name='month']").value = month;
+  }
+
+  // Auto-fill amount
+  if (amount) {
+    document.querySelector("input[name='amount']").value = amount;
+  }
+
+  // Auto-fill today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.querySelector("input[name='payment_date']").value = today;
+
+  // Default mode
+  document.querySelector("select[name='mode']").value = "UPI";
+}
+
+/* ================= SEARCH ================= */
+function searchTable() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+
+  // TABLE
+  const rows = document.querySelectorAll("#paymentsTable tbody tr");
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(input) ? "" : "none";
+  });
+
+  // MOBILE CARDS
+  const cards = document.querySelectorAll(".card.mb-3");
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    card.style.display = text.includes(input) ? "" : "none";
+  });
+
+  showPage(1); // reset pagination
+}
+
+/* ================= PAGINATION ================= */
+let currentPage = 1;
+const rowsPerPage = 5;
+
+function getVisibleItems() {
+  if (window.innerWidth < 768) {
+    return Array.from(document.querySelectorAll(".card.mb-3"))
+      .filter(el => el.style.display !== "none");
+  } else {
+    return Array.from(document.querySelectorAll("#paymentsTable tbody tr"))
+      .filter(el => el.style.display !== "none");
+  }
+}
+
+function showPage(page) {
+  const allItems = window.innerWidth < 768
+    ? document.querySelectorAll(".card.mb-3")
+    : document.querySelectorAll("#paymentsTable tbody tr");
+
+  const visibleItems = getVisibleItems();
+  const totalPages = Math.ceil(visibleItems.length / rowsPerPage) || 1;
+
+  currentPage = page;
+
+  // Hide all first
+  allItems.forEach(item => item.style.display = "none");
+
+  // Show only current page items
+  visibleItems.forEach((item, index) => {
+    if (
+      index >= (page - 1) * rowsPerPage &&
+      index < page * rowsPerPage
+    ) {
+      item.style.display = "";
+    }
+  });
+
+  document.getElementById("pageInfo").innerText =
+    `Page ${page} of ${totalPages}`;
+}
+
+function nextPage() {
+  const totalPages = Math.ceil(getVisibleItems().length / rowsPerPage);
+
+  if (currentPage < totalPages) {
+    showPage(currentPage + 1);
+  }
+}
+
+function prevPage() {
+  if (currentPage > 1) {
+    showPage(currentPage - 1);
+  }
+}
+
+/* ================= HISTORY ================= */
+function loadHistory(tenant_id, tenant_name){
+  document.getElementById('historyTenantName').innerText =
+    tenant_name + " - Payment History";
+
+  const tbody = document.getElementById('historyBody');
+  tbody.innerHTML = '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
+
+  fetch(`/tenant-history/${tenant_id}/`)
+  .then(res => res.json())
+  .then(data => {
+    tbody.innerHTML = '';
+
+    if(data.length === 0){
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center">No payments found</td></tr>';
+    } else {
+      data.forEach(p => {
+       tbody.innerHTML += `
+<tr>
+  <td data-label="Month">${p.month}</td>
+  <td data-label="Property">${p.property_name}</td>
+  <td data-label="Amount">₹ ${p.amount}</td>
+  <td data-label="Date">${p.payment_date || '-'}</td>
+  <td data-label="Mode">${p.mode || '-'}</td>
+  <td data-label="Status">
+   <span class="${
+  p.status === 'Paid' ? 'status-paid' : 'status-overdue'
+}">
+  ${p.status}
+</span>
+  </td>
+</tr>`;
+      });
+    }
+  });
+}
+
+/* ================= FORM HELPERS ================= */
+ function fillProperty() {
+  const tenantSelect = document.getElementById("tenantSelect");
+  const propertyField = document.getElementById("propertyField");
+  const selectedOption = tenantSelect.options[tenantSelect.selectedIndex];
+
+  propertyField.value = selectedOption.getAttribute("data-property") || "";
+}
+
+function disableBtn() {
+  const btn = document.getElementById("saveBtn");
+  btn.disabled = true;
+  btn.innerText = "Saving...";
+}
+
+/* ================= INIT ================= */
+window.onload = function () {
+  showPage(1);
+};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
