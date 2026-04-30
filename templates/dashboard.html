@@ -230,8 +230,11 @@
             <div>
               <i class="bi bi-person-circle"> {{name}}</i>
             </div>
+          </div>
 
-            <div class="row mt-4">
+          <!-- MAIN DASHBOARD CONTENT -->
+          <div class="container-fluid p-4">
+            <div class="row g-4">
               <div class="col-12 col-sm-6 col-lg-4">
                 <div class="card card-custom p-4 text-center">
                   <h6>Average Payment</h6>
@@ -253,8 +256,21 @@
                 </div>
               </div>
             </div>
+            <div class="card card-custom p-4 mt-4">
+              <h5 class="mb-3">Revenue Analytics</h5>
 
-            <!-- ✅ Insights OUTSIDE row OR inside full-width column -->
+              <!-- Loader -->
+              <div id="chartLoader" class="text-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Loading analytics...</p>
+              </div>
+
+              <!-- Chart Container -->
+              <div id="chartContainer" style="height: 300px; display: none">
+                <canvas id="revenueChart"></canvas>
+              </div>
+            </div>
+            <!-- Insights -->
             <div class="card card-custom p-4 mt-4">
               <h5 class="fw-semibold mb-3">💡 Insights</h5>
               <ul
@@ -282,7 +298,7 @@
         try {
           const email = "{{ request.session.email }}";
 
-          const res = await fetch(`/api/dashboard/?email=${email}`);
+          const res = await fetch(`/api/dashboard/`);
           const data = await res.json();
 
           console.log("DATA:", data);
